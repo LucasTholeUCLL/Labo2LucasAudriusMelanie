@@ -20,6 +20,8 @@ import javafx.stage.Stage;
 
 public class DecoderMenu {
 	private FlowPane root;
+	private Button setEncodeButton;
+	private Button setDecodeButton;
 	
 	public DecoderMenu(Stage primaryStage) {
 
@@ -46,10 +48,10 @@ public class DecoderMenu {
 		outputField.setMaxHeight(100);
 		outputField.setMaxWidth(250);
 		
-		Button setEncodeButton = new Button("Encode");
-		setEncodeButton.setDisable(true);
-		Button setDecodeButton = new Button("Decode");
-		setDecodeButton.setDisable(true);
+		setEncodeButton = new Button("Encode");
+		setDecodeButton = new Button("Decode");
+		
+		disableButtons(true);
 		
 		//ObservableList<String> choices = FXCollections.observableArrayList("Cezar", "Backcode", "Random");
 		ObservableList<String> choices = FXCollections.observableArrayList(decoder.getDecoderList());
@@ -60,8 +62,7 @@ public class DecoderMenu {
 			@Override
 			public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
 				if (!inputField.getText().isEmpty()) {
-					setDecodeButton.setDisable(false);
-					setEncodeButton.setDisable(false);
+					disableButtons(false);
 				}
 				decoder.setStrategy((int)newValue);
 			}
@@ -71,22 +72,26 @@ public class DecoderMenu {
 			if (decoder.strategyIsCezar()) {
 				try {
 					decoder.setShift(newValue);
-					setDecodeButton.setDisable(false);
-					setEncodeButton.setDisable(false);
+					if (!inputField.getText().trim().isEmpty()) {
+						disableButtons(false);
+					}
 				} catch (IllegalArgumentException e) {
-					setDecodeButton.setDisable(true);
-					setEncodeButton.setDisable(true);
+					disableButtons(true);
 				}
 			}
 		});
 		
 		inputField.textProperty().addListener((observable, oldValue, newValue) -> {
 		    if (!newValue.trim().isEmpty() && decoder.hasStrategy()) {
-		    	setDecodeButton.setDisable(false);
-				setEncodeButton.setDisable(false);
+		    	if (decoder.strategyIsCezar()) {
+					if (!Shift.getText().trim().isEmpty()) {
+						disableButtons(false);
+					}
+				} else {
+					disableButtons(false);
+				}
 		    } else {
-		    	setDecodeButton.setDisable(true);
-				setEncodeButton.setDisable(true);
+		    	disableButtons(true);
 		    }
 		});
 		
@@ -113,5 +118,10 @@ public class DecoderMenu {
 		root.getChildren().add(setEncodeButton);
 		root.getChildren().add(setDecodeButton);
 		primaryStage.show();
+	}
+	
+	private void disableButtons(boolean b) {
+		setDecodeButton.setDisable(b);
+		setEncodeButton.setDisable(b);
 	}
 }
