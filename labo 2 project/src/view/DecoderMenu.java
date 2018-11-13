@@ -1,6 +1,5 @@
 package view;
 
-//import domain.Decoder;
 import domain.DecoderFacade;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -20,8 +19,11 @@ import javafx.stage.Stage;
 
 public class DecoderMenu {
 	private FlowPane root;
+	
 	private Button setEncodeButton;
 	private Button setDecodeButton;
+	private TextField Shift;
+	private Label labelShift;
 	
 	public DecoderMenu(Stage primaryStage) {
 
@@ -36,12 +38,12 @@ public class DecoderMenu {
 		Scene mainScene = new Scene(root, 300, 350);
 		primaryStage.setScene(mainScene);
 		Label label1 = new Label("Input:");
-		Label labelShift = new Label("Shift: ");
+		this.labelShift = new Label("Shift: ");
 		Label label2 = new Label("Output: ");
 		TextArea inputField = new TextArea();
 		inputField.setMaxHeight(100);
 		inputField.setMaxWidth(250);
-		TextField Shift = new TextField();
+		this.Shift = new TextField();
 		Shift.setText("0");
 		Shift.setMaxWidth(50);
 		TextArea outputField = new TextArea();
@@ -52,6 +54,7 @@ public class DecoderMenu {
 		setDecodeButton = new Button("Decode");
 		
 		disableButtons(true);
+		enableShift(false);
 		
 		//ObservableList<String> choices = FXCollections.observableArrayList("Cezar", "Backcode", "Random");
 		ObservableList<String> choices = FXCollections.observableArrayList(decoder.getDecoderList());
@@ -64,7 +67,11 @@ public class DecoderMenu {
 				if (!inputField.getText().isEmpty()) {
 					disableButtons(false);
 				}
+				
 				decoder.setStrategy((int)newValue);
+				
+				if (decoder.strategyIsCezar()) enableShift(true);
+				else enableShift(false);
 			}
 		});
 		
@@ -123,5 +130,10 @@ public class DecoderMenu {
 	private void disableButtons(boolean b) {
 		setDecodeButton.setDisable(b);
 		setEncodeButton.setDisable(b);
+	}
+	
+	private void enableShift(boolean b) {
+		labelShift.setVisible(b);
+		Shift.setVisible(b);
 	}
 }
